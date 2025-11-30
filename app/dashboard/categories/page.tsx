@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Card, CardBody } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
@@ -26,10 +26,15 @@ import { Spinner } from "@heroui/spinner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import {
+  useGetCategoriesApiV1CategoriesGet,
+  useCreateCategoryApiV1CategoriesPost,
+  type CategoryType,
+} from "@/lib/api";
 
 const categorySchema = z.object({
   name: z.string().min(1, "Tên danh mục là bắt buộc"),
-  type: z.enum(["INCOME", "EXPENSE"]),
+  type: z.enum(["INCOME", "EXPENSE"] as const),
   icon: z.string().optional(),
   color: z.string().optional(),
 });
@@ -37,10 +42,19 @@ const categorySchema = z.object({
 type CategoryFormData = z.infer<typeof categorySchema>;
 
 export default function CategoriesPage() {
-  const [categories, setCategories] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<"all" | "INCOME" | "EXPENSE">("all");
+  const [filter, setFilter] = useState<"all" | CategoryType | null>("all");
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  // Fetch categories
+  const {
+    data: categories,
+    isLoading,
+    refetch,
+  } = useGetCategoriesApiV1CategoriesGet();
+
+  // Create category mutation
+  const { mutate: createCategory, isPending: isCreating } =
+    useCreateCategoryApiV1CategoriesPost();
 
   const {
     register,
@@ -56,43 +70,20 @@ export default function CategoriesPage() {
     },
   });
 
-  useEffect(() => {
-    fetchCategories();
-  }, [filter]);
-
-  const fetchCategories = async () => {
-    try {
-      setLoading(true);
-      const url =
-        filter === "all" ? "/api/categories" : `/api/categories?type=${filter}`;
-      const response = await fetch(url);
-      if (response.ok) {
-        const data = await response.json();
-        setCategories(data);
-      }
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const onSubmit = async (data: CategoryFormData) => {
-    try {
-      const response = await fetch("/api/categories", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      if (response.ok) {
-        onClose();
-        reset();
-        fetchCategories();
+    createCategory(
+      { data },
+      {
+        onSuccess: () => {
+          onClose();
+          reset();
+          refetch();
+        },
+        onError: (error) => {
+          console.error("Error saving category:", error);
+        },
       }
-    } catch (error) {
-      console.error("Error saving category:", error);
-    }
+    );
   };
 
   const handleAddNew = () => {
@@ -101,6 +92,12 @@ export default function CategoriesPage() {
     });
     onOpen();
   };
+
+  // Filter categories
+  const filteredCategories =
+    filter === "all" || !filter
+      ? categories
+      : categories?.filter((cat) => cat.type === filter);
 
   return (
     <div className="space-y-6">
@@ -141,7 +138,7 @@ export default function CategoriesPage() {
             </Button>
           </div>
 
-          {loading ? (
+          {isLoading ? (
             <div className="flex justify-center py-8">
               <Spinner size="lg" />
             </div>
@@ -151,10 +148,10 @@ export default function CategoriesPage() {
                 <TableColumn>TÊN</TableColumn>
                 <TableColumn>LOẠI</TableColumn>
                 <TableColumn>ICON</TableColumn>
-                <TableColumn>NGÀY TẠO</TableColumn>
+                <TableColumn>MÀU</TableColumn>
               </TableHeader>
               <TableBody emptyContent="Chưa có danh mục nào">
-                {categories.map((category) => (
+                {(filteredCategories || []).map((category) => (
                   <TableRow key={category.id}>
                     <TableCell>{category.name}</TableCell>
                     <TableCell>
@@ -169,7 +166,17 @@ export default function CategoriesPage() {
                     </TableCell>
                     <TableCell>{category.icon || "—"}</TableCell>
                     <TableCell>
-                      {new Date(category.createdAt).toLocaleDateString("vi-VN")}
+                      {category.color ? (
+                        <div className="flex items-center gap-2">
+                          <div
+                            className="w-6 h-6 rounded"
+                            style={{ backgroundColor: category.color }}
+                          />
+                          {category.color}
+                        </div>
+                      ) : (
+                        "—"
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -197,16 +204,14 @@ export default function CategoriesPage() {
                   label="Loại"
                   {...register("type")}
                   selectedKeys={[watch("type")]}
-                  onChange={(e) => setValue("type", e.target.value as any)}
+                  onChange={(e) =>
+                    setValue("type", e.target.value as CategoryType)
+                  }
                   isInvalid={!!errors.type}
                   errorMessage={errors.type?.message}
                 >
-                  <SelectItem key="INCOME" value="INCOME">
-                    Thu nhập
-                  </SelectItem>
-                  <SelectItem key="EXPENSE" value="EXPENSE">
-                    Chi tiêu
-                  </SelectItem>
+                  <SelectItem key="INCOME">Thu nhập</SelectItem>
+                  <SelectItem key="EXPENSE">Chi tiêu</SelectItem>
                 </Select>
 
                 <Input
@@ -226,7 +231,7 @@ export default function CategoriesPage() {
               <Button variant="light" onPress={onClose}>
                 Hủy
               </Button>
-              <Button color="primary" type="submit">
+              <Button color="primary" type="submit" isLoading={isCreating}>
                 Thêm
               </Button>
             </ModalFooter>

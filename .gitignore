@@ -10,6 +10,12 @@ node_modules/
 /build
 /dist
 
+# Next.js
+.next/
+
+# Generated API
+lib/api/generated/
+
 # Misc
 .DS_Store
 .env

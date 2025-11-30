@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
-import { Select, SelectItem } from "@heroui/select";
 import {
   Modal,
   ModalContent,
@@ -18,98 +17,127 @@ import { Spinner } from "@heroui/spinner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import {
+  useGetWalletsApiV1WalletsGet,
+  useCreateWalletApiV1WalletsPost,
+  useUpdateWalletApiV1WalletsWalletIdPatch,
+  useDeleteWalletApiV1WalletsWalletIdDelete,
+} from "@/lib/api";
 
 const walletSchema = z.object({
   name: z.string().min(1, "Tên ví là bắt buộc"),
-  type: z.enum([
-    "CASH",
-    "BANK_ACCOUNT",
-    "CREDIT_CARD",
-    "E_WALLET",
-    "INVESTMENT",
-    "OTHER",
-  ]),
-  balance: z.number().default(0),
   currency: z.string().default("VND"),
-  icon: z.string().optional(),
-  color: z.string().optional(),
-  isDefault: z.boolean().optional(),
+  initial_balance: z.number().default(0),
 });
 
 type WalletFormData = z.infer<typeof walletSchema>;
 
 export default function WalletsPage() {
-  const [wallets, setWallets] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [editingWallet, setEditingWallet] = useState<any>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  // Fetch wallets
+  const { data: wallets, isLoading, refetch } = useGetWalletsApiV1WalletsGet();
+
+  // Create wallet mutation
+  const { mutate: createWallet, isPending: isCreating } =
+    useCreateWalletApiV1WalletsPost();
+
+  // Update wallet mutation
+  const { mutate: updateWallet, isPending: isUpdating } =
+    useUpdateWalletApiV1WalletsWalletIdPatch();
+
+  // Delete wallet mutation
+  const { mutate: deleteWallet } = useDeleteWalletApiV1WalletsWalletIdDelete();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-    watch,
     setValue,
   } = useForm<WalletFormData>({
     resolver: zodResolver(walletSchema),
     defaultValues: {
-      type: "CASH",
-      balance: 0,
       currency: "VND",
-      isDefault: false,
+      initial_balance: 0,
     },
   });
 
-  useEffect(() => {
-    fetchWallets();
-  }, []);
-
-  const fetchWallets = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch("/api/wallets");
-      if (response.ok) {
-        const data = await response.json();
-        setWallets(data);
-      }
-    } catch (error) {
-      console.error("Error fetching wallets:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const onSubmit = async (data: WalletFormData) => {
-    try {
-      const response = await fetch("/api/wallets", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...data,
-          balance: Number(data.balance),
-        }),
-      });
-
-      if (response.ok) {
-        onClose();
-        reset();
-        fetchWallets();
-      }
-    } catch (error) {
-      console.error("Error saving wallet:", error);
+    if (editingWallet) {
+      // Update existing wallet
+      updateWallet(
+        {
+          walletId: editingWallet.id,
+          data: {
+            name: data.name,
+            currency: data.currency,
+          },
+        },
+        {
+          onSuccess: () => {
+            onClose();
+            reset();
+            setEditingWallet(null);
+            refetch();
+          },
+          onError: (error) => {
+            console.error("Error updating wallet:", error);
+          },
+        }
+      );
+    } else {
+      // Create new wallet
+      createWallet(
+        { data },
+        {
+          onSuccess: () => {
+            onClose();
+            reset();
+            refetch();
+          },
+          onError: (error) => {
+            console.error("Error creating wallet:", error);
+          },
+        }
+      );
     }
   };
 
   const handleAddNew = () => {
     setEditingWallet(null);
     reset({
-      type: "CASH",
-      balance: 0,
       currency: "VND",
-      isDefault: false,
+      initial_balance: 0,
     });
     onOpen();
+  };
+
+  const handleEdit = (wallet: any) => {
+    setEditingWallet(wallet);
+    reset({
+      name: wallet.name,
+      currency: wallet.currency,
+      initial_balance: wallet.balance,
+    });
+    onOpen();
+  };
+
+  const handleDelete = (walletId: number) => {
+    if (confirm("Bạn có chắc chắn muốn xóa ví này?")) {
+      deleteWallet(
+        { walletId },
+        {
+          onSuccess: () => {
+            refetch();
+          },
+          onError: (error) => {
+            console.error("Error deleting wallet:", error);
+          },
+        }
+      );
+    }
   };
 
   const formatCurrency = (amount: number) => {
@@ -119,20 +147,8 @@ export default function WalletsPage() {
     }).format(amount);
   };
 
-  const getWalletTypeLabel = (type: string) => {
-    const labels: any = {
-      CASH: "Tiền mặt",
-      BANK_ACCOUNT: "Tài khoản ngân hàng",
-      CREDIT_CARD: "Thẻ tín dụng",
-      E_WALLET: "Ví điện tử",
-      INVESTMENT: "Đầu tư",
-      OTHER: "Khác",
-    };
-    return labels[type] || type;
-  };
-
   const getTotalBalance = () => {
-    return wallets.reduce((sum, wallet) => sum + wallet.balance, 0);
+    return (wallets || []).reduce((sum, wallet) => sum + wallet.balance, 0);
   };
 
   return (
@@ -153,11 +169,11 @@ export default function WalletsPage() {
         </Button>
       </div>
 
-      {loading ? (
+      {isLoading ? (
         <div className="flex justify-center py-8">
           <Spinner size="lg" />
         </div>
-      ) : wallets.length === 0 ? (
+      ) : !wallets || wallets.length === 0 ? (
         <Card>
           <CardBody className="text-center py-12">
             <p className="text-lg text-default-400">Chưa có ví nào</p>
@@ -174,23 +190,31 @@ export default function WalletsPage() {
                 <div>
                   <h3 className="text-lg font-semibold">{wallet.name}</h3>
                   <Chip size="sm" variant="flat" className="mt-1">
-                    {getWalletTypeLabel(wallet.type)}
+                    {wallet.currency}
                   </Chip>
                 </div>
-                {wallet.isDefault && (
-                  <Chip color="primary" size="sm">
-                    Mặc định
-                  </Chip>
-                )}
               </CardHeader>
               <CardBody>
                 <div className="text-3xl font-bold text-primary mb-4">
                   {formatCurrency(wallet.balance)}
                 </div>
-                <p className="text-xs text-default-400">
-                  Tạo lúc:{" "}
-                  {new Date(wallet.createdAt).toLocaleDateString("vi-VN")}
-                </p>
+                <div className="flex gap-2 mt-4">
+                  <Button
+                    size="sm"
+                    variant="flat"
+                    onPress={() => handleEdit(wallet)}
+                  >
+                    Sửa
+                  </Button>
+                  <Button
+                    size="sm"
+                    color="danger"
+                    variant="flat"
+                    onPress={() => handleDelete(wallet.id)}
+                  >
+                    Xóa
+                  </Button>
+                </div>
               </CardBody>
             </Card>
           ))}
@@ -200,7 +224,9 @@ export default function WalletsPage() {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalContent>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <ModalHeader>Thêm ví mới</ModalHeader>
+            <ModalHeader>
+              {editingWallet ? "Cập nhật ví" : "Thêm ví mới"}
+            </ModalHeader>
             <ModalBody>
               <div className="space-y-4">
                 <Input
@@ -211,49 +237,36 @@ export default function WalletsPage() {
                   errorMessage={errors.name?.message}
                 />
 
-                <Select
-                  label="Loại ví"
-                  {...register("type")}
-                  selectedKeys={[watch("type")]}
-                  onChange={(e) => setValue("type", e.target.value as any)}
-                  isInvalid={!!errors.type}
-                  errorMessage={errors.type?.message}
-                >
-                  <SelectItem key="CASH" value="CASH">
-                    Tiền mặt
-                  </SelectItem>
-                  <SelectItem key="BANK_ACCOUNT" value="BANK_ACCOUNT">
-                    Tài khoản ngân hàng
-                  </SelectItem>
-                  <SelectItem key="CREDIT_CARD" value="CREDIT_CARD">
-                    Thẻ tín dụng
-                  </SelectItem>
-                  <SelectItem key="E_WALLET" value="E_WALLET">
-                    Ví điện tử
-                  </SelectItem>
-                  <SelectItem key="INVESTMENT" value="INVESTMENT">
-                    Đầu tư
-                  </SelectItem>
-                  <SelectItem key="OTHER" value="OTHER">
-                    Khác
-                  </SelectItem>
-                </Select>
-
                 <Input
-                  label="Số dư ban đầu"
-                  type="number"
-                  {...register("balance", { valueAsNumber: true })}
-                  isInvalid={!!errors.balance}
-                  errorMessage={errors.balance?.message}
+                  label="Tiền tệ"
+                  {...register("currency")}
+                  placeholder="VND"
+                  isInvalid={!!errors.currency}
+                  errorMessage={errors.currency?.message}
                 />
+
+                {!editingWallet && (
+                  <Input
+                    label="Số dư ban đầu"
+                    type="number"
+                    {...register("initial_balance", { valueAsNumber: true })}
+                    placeholder="0"
+                    isInvalid={!!errors.initial_balance}
+                    errorMessage={errors.initial_balance?.message}
+                  />
+                )}
               </div>
             </ModalBody>
             <ModalFooter>
               <Button variant="light" onPress={onClose}>
                 Hủy
               </Button>
-              <Button color="primary" type="submit">
-                Thêm
+              <Button
+                color="primary"
+                type="submit"
+                isLoading={isCreating || isUpdating}
+              >
+                {editingWallet ? "Cập nhật" : "Thêm"}
               </Button>
             </ModalFooter>
           </form>

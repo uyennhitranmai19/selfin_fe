@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
@@ -9,6 +8,8 @@ import { Link } from "@heroui/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useLoginApiV1AuthLoginPost } from "@/lib/api";
+import { useState } from "react";
 
 const signinSchema = z.object({
   email: z.string().email("Email không hợp lệ"),
@@ -20,7 +21,8 @@ type SigninFormData = z.infer<typeof signinSchema>;
 export default function SigninPage() {
   const router = useRouter();
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+
+  const { mutate: login, isPending } = useLoginApiV1AuthLoginPost();
 
   const {
     register,
@@ -31,22 +33,25 @@ export default function SigninPage() {
   });
 
   const onSubmit = async (data: SigninFormData) => {
-    setIsLoading(true);
     setError("");
 
-    try {
-      // TODO: Kết nối API thật sau
-      // Tạm thời bypass để test UI
-      await new Promise((resolve) => setTimeout(resolve, 500)); // Giả lập delay
-
-      // Giả lập đăng nhập thành công
-      console.log("Đăng nhập thành công:", data);
-      router.push("/dashboard");
-    } catch (err) {
-      setError("Đã xảy ra lỗi. Vui lòng thử lại.");
-    } finally {
-      setIsLoading(false);
-    }
+    login(
+      { data },
+      {
+        onSuccess: (response) => {
+          // Lưu token vào localStorage
+          localStorage.setItem("access_token", response.access_token);
+          console.log("Đăng nhập thành công:", response.user);
+          router.push("/dashboard");
+        },
+        onError: (err: any) => {
+          console.error("Lỗi đăng nhập:", err);
+          setError(
+            err?.response?.data?.detail || "Email hoặc mật khẩu không đúng"
+          );
+        },
+      }
+    );
   };
 
   return (
@@ -96,7 +101,7 @@ export default function SigninPage() {
             <Button
               type="submit"
               color="primary"
-              isLoading={isLoading}
+              isLoading={isPending}
               className="w-full"
             >
               Đăng nhập

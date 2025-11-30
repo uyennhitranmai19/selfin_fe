@@ -9,10 +9,11 @@ import { Link } from "@heroui/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useRegisterApiV1AuthRegisterPost } from "@/lib/api";
 
 const registerSchema = z
   .object({
-    name: z.string().min(2, "Tên phải có ít nhất 2 ký tự"),
+    full_name: z.string().min(2, "Tên phải có ít nhất 2 ký tự"),
     email: z.string().email("Email không hợp lệ"),
     password: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
     confirmPassword: z.string(),
@@ -27,7 +28,9 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 export default function RegisterPage() {
   const router = useRouter();
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+
+  const { mutate: registerUser, isPending } =
+    useRegisterApiV1AuthRegisterPost();
 
   const {
     register,
@@ -38,34 +41,30 @@ export default function RegisterPage() {
   });
 
   const onSubmit = async (data: RegisterFormData) => {
-    setIsLoading(true);
     setError("");
 
-    try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: data.name,
+    registerUser(
+      {
+        data: {
+          full_name: data.full_name,
           email: data.email,
           password: data.password,
-        }),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        setError(result.error || "Đã xảy ra lỗi");
-        return;
+        },
+      },
+      {
+        onSuccess: (response) => {
+          console.log("Đăng ký thành công:", response);
+          // Redirect to signin page với thông báo thành công
+          router.push("/auth/signin?registered=true");
+        },
+        onError: (err: any) => {
+          console.error("Lỗi đăng ký:", err);
+          setError(
+            err?.response?.data?.detail || "Đã xảy ra lỗi. Vui lòng thử lại."
+          );
+        },
       }
-
-      // Redirect to signin page
-      router.push("/auth/signin?registered=true");
-    } catch (err) {
-      setError("Đã xảy ra lỗi. Vui lòng thử lại.");
-    } finally {
-      setIsLoading(false);
-    }
+    );
   };
 
   return (
@@ -89,11 +88,11 @@ export default function RegisterPage() {
             )}
 
             <Input
-              {...register("name")}
+              {...register("full_name")}
               label="Họ và tên"
               placeholder="Nguyễn Văn A"
-              isInvalid={!!errors.name}
-              errorMessage={errors.name?.message}
+              isInvalid={!!errors.full_name}
+              errorMessage={errors.full_name?.message}
             />
 
             <Input
@@ -126,7 +125,7 @@ export default function RegisterPage() {
             <Button
               type="submit"
               color="primary"
-              isLoading={isLoading}
+              isLoading={isPending}
               className="w-full"
             >
               Đăng ký
