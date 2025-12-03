@@ -56,20 +56,18 @@ export default function SigninPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="flex flex-col gap-1 px-6 pt-6">
+      <Card className="w-full max-w-md shadow-2xl border border-gray-100 dark:border-gray-800">
+        <CardHeader className="flex flex-col gap-1 px-6 pt-6 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-t-lg">
           <h1 className="text-2xl font-bold">Đăng nhập</h1>
-          <p className="text-sm text-default-500">
-            Đăng nhập vào tài khoản của bạn
-          </p>
+          <p className="text-sm text-sky-50">Đăng nhập vào tài khoản của bạn</p>
         </CardHeader>
-        <CardBody className="px-6">
+        <CardBody className="px-6 py-8">
           <form
             onSubmit={handleSubmit(onSubmit)}
             className="flex flex-col gap-4"
           >
             {error && (
-              <div className="rounded-lg bg-danger-50 p-3 text-sm text-danger">
+              <div className="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-3 text-sm text-red-600 dark:text-red-400">
                 {error}
               </div>
             )}
@@ -81,6 +79,11 @@ export default function SigninPage() {
               placeholder="email@example.com"
               isInvalid={!!errors.email}
               errorMessage={errors.email?.message}
+              classNames={{
+                input: "bg-white dark:bg-gray-900",
+                inputWrapper:
+                  "border-gray-200 dark:border-gray-700 hover:border-sky-400",
+              }}
             />
 
             <Input
@@ -90,28 +93,40 @@ export default function SigninPage() {
               placeholder="Nhập mật khẩu"
               isInvalid={!!errors.password}
               errorMessage={errors.password?.message}
+              classNames={{
+                input: "bg-white dark:bg-gray-900",
+                inputWrapper:
+                  "border-gray-200 dark:border-gray-700 hover:border-sky-400",
+              }}
             />
 
             <div className="flex justify-end">
-              <Link href="/auth/forgot-password" size="sm">
+              <Link
+                href="/auth/forgot-password"
+                size="sm"
+                className="text-sky-600 hover:text-sky-700"
+              >
                 Quên mật khẩu?
               </Link>
             </div>
 
             <Button
               type="submit"
-              color="primary"
+              className="w-full bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all"
               isLoading={isPending}
-              className="w-full"
             >
               Đăng nhập
             </Button>
           </form>
         </CardBody>
-        <CardFooter className="px-6 pb-6">
-          <p className="text-sm text-default-500">
+        <CardFooter className="px-6 pb-6 bg-gray-50 dark:bg-gray-800/50 rounded-b-lg">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             Chưa có tài khoản?{" "}
-            <Link href="/auth/register" size="sm">
+            <Link
+              href="/auth/register"
+              size="sm"
+              className="text-sky-600 hover:text-sky-700 font-semibold"
+            >
               Đăng ký ngay
             </Link>
           </p>

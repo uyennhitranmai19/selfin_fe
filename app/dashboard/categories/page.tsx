@@ -102,9 +102,11 @@ export default function CategoriesPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Quản lý Danh mục</h1>
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-sky-600 to-blue-600 bg-clip-text text-transparent">
+          Quản lý Danh mục
+        </h1>
         <Button
-          color="primary"
+          className="bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all"
           onPress={handleAddNew}
           startContent={<span>➕</span>}
         >
@@ -112,25 +114,37 @@ export default function CategoriesPage() {
         </Button>
       </div>
 
-      <Card>
+      <Card className="shadow-lg border border-gray-200 dark:border-gray-800">
         <CardBody>
           <div className="flex gap-2 mb-4">
             <Button
-              color={filter === "all" ? "primary" : "default"}
+              className={
+                filter === "all"
+                  ? "bg-gradient-to-r from-sky-500 to-blue-600 text-white"
+                  : "bg-white dark:bg-gray-800"
+              }
               variant={filter === "all" ? "solid" : "flat"}
               onPress={() => setFilter("all")}
             >
               Tất cả
             </Button>
             <Button
-              color={filter === "INCOME" ? "success" : "default"}
+              className={
+                filter === "INCOME"
+                  ? "bg-gradient-to-r from-green-500 to-emerald-600 text-white"
+                  : "bg-white dark:bg-gray-800"
+              }
               variant={filter === "INCOME" ? "solid" : "flat"}
               onPress={() => setFilter("INCOME")}
             >
               Thu nhập
             </Button>
             <Button
-              color={filter === "EXPENSE" ? "danger" : "default"}
+              className={
+                filter === "EXPENSE"
+                  ? "bg-gradient-to-r from-red-500 to-rose-600 text-white"
+                  : "bg-white dark:bg-gray-800"
+              }
               variant={filter === "EXPENSE" ? "solid" : "flat"}
               onPress={() => setFilter("EXPENSE")}
             >

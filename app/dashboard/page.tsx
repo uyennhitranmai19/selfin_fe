@@ -175,22 +175,30 @@ export default function DashboardPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="text-default-500">Tổng quan tài chính của bạn</p>
+          <p className="text-gray-500">Tổng quan tài chính của bạn</p>
         </div>
         <div className="flex gap-2">
           <Button
             size="sm"
             variant={period === "month" ? "solid" : "flat"}
-            color="primary"
             onClick={() => setPeriod("month")}
+            className={
+              period === "month"
+                ? "bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold"
+                : "text-sky-600 hover:bg-sky-50"
+            }
           >
             Tháng này
           </Button>
           <Button
             size="sm"
             variant={period === "year" ? "solid" : "flat"}
-            color="primary"
             onClick={() => setPeriod("year")}
+            className={
+              period === "year"
+                ? "bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold"
+                : "text-sky-600 hover:bg-sky-50"
+            }
           >
             Năm này
           </Button>
@@ -199,66 +207,66 @@ export default function DashboardPage() {
 
       {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-4">
-        <Card>
+        <Card className="border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow">
           <CardBody>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-default-500">Thu nhập</p>
-                <p className="text-2xl font-bold text-success">
+                <p className="text-sm text-gray-500">Thu nhập</p>
+                <p className="text-2xl font-bold text-green-600">
                   {formatCurrency(analytics.summary.income)}
                 </p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-success-50">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
                 <span className="text-2xl">📈</span>
               </div>
             </div>
           </CardBody>
         </Card>
 
-        <Card>
+        <Card className="border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow">
           <CardBody>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-default-500">Chi tiêu</p>
-                <p className="text-2xl font-bold text-danger">
+                <p className="text-sm text-gray-500">Chi tiêu</p>
+                <p className="text-2xl font-bold text-red-600">
                   {formatCurrency(analytics.summary.expense)}
                 </p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-danger-50">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
                 <span className="text-2xl">📉</span>
               </div>
             </div>
           </CardBody>
         </Card>
 
-        <Card>
+        <Card className="border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow">
           <CardBody>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-default-500">Số dư</p>
+                <p className="text-sm text-gray-500">Số dư</p>
                 <p
-                  className={`text-2xl font-bold ${analytics.summary.balance >= 0 ? "text-success" : "text-danger"}`}
+                  className={`text-2xl font-bold ${analytics.summary.balance >= 0 ? "text-green-600" : "text-red-600"}`}
                 >
                   {formatCurrency(analytics.summary.balance)}
                 </p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-50">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-sky-100">
                 <span className="text-2xl">💰</span>
               </div>
             </div>
           </CardBody>
         </Card>
 
-        <Card>
+        <Card className="border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow">
           <CardBody>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-default-500">Tổng tài sản</p>
-                <p className="text-2xl font-bold text-primary">
+                <p className="text-sm text-gray-500">Tổng tài sản</p>
+                <p className="text-2xl font-bold text-sky-600">
                   {formatCurrency(analytics.summary.totalBalance)}
                 </p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-warning-50">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-100">
                 <span className="text-2xl">👛</span>
               </div>
             </div>
@@ -269,8 +277,8 @@ export default function DashboardPage() {
       {/* Charts */}
       <div className="grid gap-6 md:grid-cols-2">
         {/* Pie Chart */}
-        <Card>
-          <CardHeader>
+        <Card className="border-gray-200 dark:border-gray-700">
+          <CardHeader className="bg-gradient-to-r from-sky-500 to-blue-600 text-white">
             <h3 className="text-lg font-semibold">Chi tiêu theo danh mục</h3>
           </CardHeader>
           <CardBody>
@@ -300,7 +308,7 @@ export default function DashboardPage() {
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-              <div className="flex h-[300px] items-center justify-center text-default-400">
+              <div className="flex h-[300px] items-center justify-center text-gray-400">
                 Chưa có dữ liệu chi tiêu
               </div>
             )}
@@ -308,22 +316,25 @@ export default function DashboardPage() {
         </Card>
 
         {/* Line Chart */}
-        <Card>
-          <CardHeader>
+        <Card className="border-gray-200 dark:border-gray-700">
+          <CardHeader className="bg-gradient-to-r from-sky-500 to-blue-600 text-white">
             <h3 className="text-lg font-semibold">Xu hướng 6 tháng</h3>
           </CardHeader>
           <CardBody>
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={analytics.monthlyTrend}>
+              <LineChart
+                data={analytics.monthlyTrend}
+                margin={{ left: 20, right: 10, top: 10, bottom: 10 }}
+              >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
-                <YAxis />
+                <YAxis width={80} />
                 <Tooltip formatter={(value: number) => formatCurrency(value)} />
                 <Legend />
                 <Line
                   type="monotone"
                   dataKey="income"
-                  stroke="#17C964"
+                  stroke="#0ea5e9"
                   name="Thu nhập"
                 />
                 <Line
@@ -340,11 +351,15 @@ export default function DashboardPage() {
 
       {/* Top Categories and Wallets */}
       <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader className="flex items-center justify-between">
+        <Card className="border-gray-200 dark:border-gray-700">
+          <CardHeader className="flex items-center justify-between bg-gradient-to-r from-sky-500 to-blue-600 text-white">
             <h3 className="text-lg font-semibold">Top chi tiêu</h3>
             <Link href="/dashboard/analytics">
-              <Button size="sm" variant="light" color="primary">
+              <Button
+                size="sm"
+                variant="light"
+                className="text-white hover:bg-white/10"
+              >
                 Xem chi tiết →
               </Button>
             </Link>
@@ -373,7 +388,7 @@ export default function DashboardPage() {
                     <p className="font-semibold">
                       {formatCurrency(category.amount)}
                     </p>
-                    <p className="text-xs text-default-400">
+                    <p className="text-xs text-gray-400">
                       {category.count} giao dịch
                     </p>
                   </div>
@@ -383,11 +398,15 @@ export default function DashboardPage() {
           </CardBody>
         </Card>
 
-        <Card>
-          <CardHeader className="flex items-center justify-between">
+        <Card className="border-gray-200 dark:border-gray-700">
+          <CardHeader className="flex items-center justify-between bg-gradient-to-r from-sky-500 to-blue-600 text-white">
             <h3 className="text-lg font-semibold">Ví của bạn</h3>
             <Link href="/dashboard/wallets">
-              <Button size="sm" variant="light" color="primary">
+              <Button
+                size="sm"
+                variant="light"
+                className="text-white hover:bg-white/10"
+              >
                 Quản lý →
               </Button>
             </Link>
@@ -398,7 +417,7 @@ export default function DashboardPage() {
                 <div key={index} className="flex items-center justify-between">
                   <div>
                     <p className="font-medium">{wallet.name}</p>
-                    <p className="text-sm text-default-400">{wallet.type}</p>
+                    <p className="text-sm text-gray-400">{wallet.type}</p>
                   </div>
                   <p className="font-semibold">
                     {formatCurrency(wallet.balance)}
@@ -411,29 +430,38 @@ export default function DashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      <Card>
-        <CardHeader>
+      <Card className="border-gray-200 dark:border-gray-700">
+        <CardHeader className="bg-gradient-to-r from-sky-500 to-blue-600 text-white">
           <h3 className="text-lg font-semibold">Thao tác nhanh</h3>
         </CardHeader>
         <CardBody>
           <div className="flex flex-wrap gap-3">
             <Link href="/dashboard/transactions?action=add">
-              <Button color="primary" startContent={<span>➕</span>}>
+              <Button
+                className="bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold"
+                startContent={<span>➕</span>}
+              >
                 Thêm giao dịch
               </Button>
             </Link>
             <Link href="/dashboard/budgets?action=add">
-              <Button color="secondary" startContent={<span>💰</span>}>
+              <Button
+                className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold"
+                startContent={<span>💰</span>}
+              >
                 Tạo ngân sách
               </Button>
             </Link>
             <Link href="/dashboard/recurring?action=add">
-              <Button color="success" startContent={<span>🔄</span>}>
+              <Button
+                className="bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold"
+                startContent={<span>🔄</span>}
+              >
                 Giao dịch định kỳ
               </Button>
             </Link>
             <Button
-              color="warning"
+              className="bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold"
               startContent={<span>📊</span>}
               onClick={() =>
                 window.open("/api/export/transactions?format=csv", "_blank")

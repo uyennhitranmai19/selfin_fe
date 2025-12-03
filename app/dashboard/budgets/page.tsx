@@ -234,11 +234,11 @@ export default function BudgetsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Quản lý Ngân sách</h1>
-          <p className="text-default-500">Theo dõi và kiểm soát chi tiêu</p>
+          <p className="text-gray-500">Theo dõi và kiểm soát chi tiêu</p>
         </div>
         <Button
-          color="primary"
           onPress={handleAddNew}
+          className="bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold"
           startContent={<span>➕</span>}
         >
           Tạo ngân sách
@@ -249,15 +249,23 @@ export default function BudgetsPage() {
       <div className="flex gap-2">
         <Button
           variant={filter === "active" ? "solid" : "flat"}
-          color="primary"
           onPress={() => setFilter("active")}
+          className={
+            filter === "active"
+              ? "bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold"
+              : "text-sky-600 hover:bg-sky-50"
+          }
         >
           Đang hoạt động
         </Button>
         <Button
           variant={filter === "all" ? "solid" : "flat"}
-          color="primary"
           onPress={() => setFilter("all")}
+          className={
+            filter === "all"
+              ? "bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold"
+              : "text-sky-600 hover:bg-sky-50"
+          }
         >
           Tất cả
         </Button>
@@ -269,10 +277,13 @@ export default function BudgetsPage() {
           <Spinner size="lg" />
         </div>
       ) : budgets.length === 0 ? (
-        <Card>
+        <Card className="border-gray-200 dark:border-gray-700">
           <CardBody className="text-center py-12">
-            <p className="text-lg text-default-400">Chưa có ngân sách nào</p>
-            <Button color="primary" onPress={handleAddNew} className="mt-4">
+            <p className="text-lg text-gray-400">Chưa có ngân sách nào</p>
+            <Button
+              onPress={handleAddNew}
+              className="mt-4 bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold"
+            >
               Tạo ngân sách đầu tiên
             </Button>
           </CardBody>
@@ -291,7 +302,11 @@ export default function BudgetsPage() {
                     <Chip size="sm" variant="flat">
                       {budget.category?.icon} {budget.category?.name}
                     </Chip>
-                    <Chip size="sm" variant="flat" color="primary">
+                    <Chip
+                      size="sm"
+                      variant="flat"
+                      className="bg-sky-100 text-sky-700"
+                    >
                       {getPeriodLabel(budget.period)}
                     </Chip>
                   </div>
@@ -346,9 +361,8 @@ export default function BudgetsPage() {
                     <Button
                       size="sm"
                       variant="flat"
-                      color="primary"
                       onPress={() => handleEdit(budget)}
-                      className="flex-1"
+                      className="flex-1 bg-sky-100 text-sky-700 hover:bg-sky-200"
                     >
                       Sửa
                     </Button>
@@ -487,7 +501,10 @@ export default function BudgetsPage() {
               <Button variant="light" onPress={onClose}>
                 Hủy
               </Button>
-              <Button color="primary" type="submit">
+              <Button
+                type="submit"
+                className="bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold"
+              >
                 {editingBudget ? "Cập nhật" : "Tạo"}
               </Button>
             </ModalFooter>

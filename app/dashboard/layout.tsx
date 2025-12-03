@@ -11,6 +11,7 @@ import {
   DropdownItem,
 } from "@heroui/dropdown";
 import { Divider } from "@heroui/divider";
+import { ExpenseTrackerLogo } from "@/components/logo";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: "📊" },
@@ -41,13 +42,14 @@ export default function DashboardLayout({
   };
 
   return (
-    <div className="flex h-screen bg-default-50">
+    <div className="fixed inset-0 flex bg-default-50 overflow-hidden z-50">
       {/* Sidebar */}
-      <aside className="hidden w-64 border-r border-divider bg-background md:block">
+      <aside className="hidden w-64 border-r border-divider bg-background md:block flex-shrink-0">
         <div className="flex h-full flex-col">
           {/* Logo */}
           <div className="flex h-16 items-center px-6">
-            <h1 className="text-xl font-bold text-primary">Expense Tracker</h1>
+            <ExpenseTrackerLogo />
+            {/* <h1 className="text-xl font-bold text-primary">Expense Tracker</h1> */}
           </div>
 
           <Divider />

@@ -1,53 +1,53 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "Next.js + HeroUI",
-  description: "Make beautiful websites regardless of your design experience.",
+  name: "ExpenseTracker",
+  description: "Quản lý chi tiêu cá nhân thông minh và hiệu quả.",
   navItems: [
     {
-      label: "Home",
+      label: "Trang chủ",
       href: "/",
-    },
-    {
-      label: "Docs",
-      href: "/docs",
-    },
-    {
-      label: "Pricing",
-      href: "/pricing",
-    },
-    {
-      label: "Blog",
-      href: "/blog",
-    },
-    {
-      label: "About",
-      href: "/about",
-    },
-  ],
-  navMenuItems: [
-    {
-      label: "Profile",
-      href: "/profile",
     },
     {
       label: "Dashboard",
       href: "/dashboard",
     },
     {
-      label: "Projects",
-      href: "/projects",
+      label: "Giao dịch",
+      href: "/dashboard/transactions",
     },
     {
-      label: "Team",
-      href: "/team",
+      label: "Ngân sách",
+      href: "/dashboard/budgets",
+    },
+  ],
+  navMenuItems: [
+    {
+      label: "Trang chủ",
+      href: "/",
     },
     {
-      label: "Calendar",
-      href: "/calendar",
+      label: "Dashboard",
+      href: "/dashboard",
     },
     {
-      label: "Settings",
+      label: "Giao dịch",
+      href: "/dashboard/transactions",
+    },
+    {
+      label: "Danh mục",
+      href: "/dashboard/categories",
+    },
+    {
+      label: "Ví",
+      href: "/dashboard/wallets",
+    },
+    {
+      label: "Ngân sách",
+      href: "/dashboard/budgets",
+    },
+    {
+      label: "Cài đặt",
       href: "/settings",
     },
     {

@@ -95,7 +95,7 @@ export default function TransactionsPage() {
 
   const transactionType = watch("type");
 
-  const onSubmit = async (data: TransactionFormData) => {
+  const onSubmit = handleSubmit(async (data: TransactionFormData) => {
     createTransaction(
       { data },
       {
@@ -112,7 +112,7 @@ export default function TransactionsPage() {
         },
       }
     );
-  };
+  });
 
   const handleDelete = (transactionId: number) => {
     if (confirm("Bạn có chắc chắn muốn xóa giao dịch này?")) {
@@ -147,15 +147,15 @@ export default function TransactionsPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Giao dịch</h1>
         <Button
-          color="primary"
           onPress={handleAddNew}
+          className="bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold"
           startContent={<span>➕</span>}
         >
           Thêm giao dịch
         </Button>
       </div>
 
-      <Card>
+      <Card className="border-gray-200 dark:border-gray-700">
         <CardHeader>
           <div className="flex gap-2 flex-wrap">
             <Select
@@ -321,9 +321,11 @@ export default function TransactionsPage() {
 
       <Modal isOpen={isOpen} onClose={onClose} size="2xl">
         <ModalContent>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <ModalHeader>Thêm giao dịch mới</ModalHeader>
-            <ModalBody>
+          <form onSubmit={onSubmit}>
+            <ModalHeader className="flex flex-col gap-1 bg-gradient-to-r from-sky-500 to-blue-600 text-white">
+              Thêm giao dịch mới
+            </ModalHeader>
+            <ModalBody className="py-6">
               <div className="space-y-4">
                 <Select
                   label="Loại giao dịch"
@@ -412,7 +414,11 @@ export default function TransactionsPage() {
               <Button variant="light" onPress={onClose}>
                 Hủy
               </Button>
-              <Button color="primary" type="submit" isLoading={isCreating}>
+              <Button
+                type="submit"
+                isLoading={isCreating}
+                className="bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold"
+              >
                 Thêm
               </Button>
             </ModalFooter>

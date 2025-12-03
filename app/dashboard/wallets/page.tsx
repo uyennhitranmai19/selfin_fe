@@ -26,8 +26,8 @@ import {
 
 const walletSchema = z.object({
   name: z.string().min(1, "Tên ví là bắt buộc"),
-  currency: z.string().default("VND"),
-  initial_balance: z.number().default(0),
+  currency: z.string(),
+  initial_balance: z.number(),
 });
 
 type WalletFormData = z.infer<typeof walletSchema>;
@@ -55,7 +55,6 @@ export default function WalletsPage() {
     handleSubmit,
     formState: { errors },
     reset,
-    setValue,
   } = useForm<WalletFormData>({
     resolver: zodResolver(walletSchema),
     defaultValues: {
@@ -64,7 +63,7 @@ export default function WalletsPage() {
     },
   });
 
-  const onSubmit = async (data: WalletFormData) => {
+  const onSubmit = handleSubmit(async (data: WalletFormData) => {
     if (editingWallet) {
       // Update existing wallet
       updateWallet(
@@ -103,7 +102,7 @@ export default function WalletsPage() {
         }
       );
     }
-  };
+  });
 
   const handleAddNew = () => {
     setEditingWallet(null);
@@ -155,13 +154,18 @@ export default function WalletsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Quản lý Ví</h1>
-          <p className="text-default-500">
-            Tổng tài sản: {formatCurrency(getTotalBalance())}
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-sky-600 to-blue-600 bg-clip-text text-transparent">
+            Quản lý Ví
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">
+            Tổng tài sản:{" "}
+            <span className="font-semibold text-sky-600">
+              {formatCurrency(getTotalBalance())}
+            </span>
           </p>
         </div>
         <Button
-          color="primary"
+          className="bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all"
           onPress={handleAddNew}
           startContent={<span>➕</span>}
         >
@@ -171,13 +175,16 @@ export default function WalletsPage() {
 
       {isLoading ? (
         <div className="flex justify-center py-8">
-          <Spinner size="lg" />
+          <Spinner size="lg" color="primary" />
         </div>
       ) : !wallets || wallets.length === 0 ? (
-        <Card>
+        <Card className="shadow-lg border border-gray-200 dark:border-gray-800">
           <CardBody className="text-center py-12">
-            <p className="text-lg text-default-400">Chưa có ví nào</p>
-            <Button color="primary" onPress={handleAddNew} className="mt-4">
+            <p className="text-lg text-gray-400">Chưa có ví nào</p>
+            <Button
+              className="bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all mt-4"
+              onPress={handleAddNew}
+            >
               Thêm ví đầu tiên
             </Button>
           </CardBody>
@@ -185,31 +192,41 @@ export default function WalletsPage() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {wallets.map((wallet) => (
-            <Card key={wallet.id}>
-              <CardHeader className="flex justify-between">
+            <Card
+              key={wallet.id}
+              className="shadow-lg border border-gray-200 dark:border-gray-800 hover:shadow-xl transition-all"
+            >
+              <CardHeader className="flex justify-between bg-gradient-to-r from-sky-50 to-blue-50 dark:from-gray-800 dark:to-gray-700">
                 <div>
-                  <h3 className="text-lg font-semibold">{wallet.name}</h3>
-                  <Chip size="sm" variant="flat" className="mt-1">
+                  <h3 className="text-lg font-semibold text-sky-700 dark:text-sky-400">
+                    {wallet.name}
+                  </h3>
+                  <Chip
+                    size="sm"
+                    variant="flat"
+                    className="mt-1 bg-sky-100 text-sky-700"
+                  >
                     {wallet.currency}
                   </Chip>
                 </div>
               </CardHeader>
               <CardBody>
-                <div className="text-3xl font-bold text-primary mb-4">
+                <div className="text-3xl font-bold bg-gradient-to-r from-sky-600 to-blue-600 bg-clip-text text-transparent mb-4">
                   {formatCurrency(wallet.balance)}
                 </div>
                 <div className="flex gap-2 mt-4">
                   <Button
                     size="sm"
                     variant="flat"
+                    className="border border-sky-500 text-sky-600 hover:bg-sky-50"
                     onPress={() => handleEdit(wallet)}
                   >
                     Sửa
                   </Button>
                   <Button
                     size="sm"
-                    color="danger"
                     variant="flat"
+                    className="border border-red-500 text-red-600 hover:bg-red-50"
                     onPress={() => handleDelete(wallet.id)}
                   >
                     Xóa
@@ -223,11 +240,11 @@ export default function WalletsPage() {
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalContent>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <ModalHeader>
+          <form onSubmit={onSubmit}>
+            <ModalHeader className="flex flex-col gap-1 bg-gradient-to-r from-sky-500 to-blue-600 text-white">
               {editingWallet ? "Cập nhật ví" : "Thêm ví mới"}
             </ModalHeader>
-            <ModalBody>
+            <ModalBody className="py-6">
               <div className="space-y-4">
                 <Input
                   label="Tên ví"
@@ -235,6 +252,11 @@ export default function WalletsPage() {
                   placeholder="VD: Ví tiền mặt"
                   isInvalid={!!errors.name}
                   errorMessage={errors.name?.message}
+                  classNames={{
+                    input: "bg-white dark:bg-gray-900",
+                    inputWrapper:
+                      "border-gray-200 dark:border-gray-700 hover:border-sky-400",
+                  }}
                 />
 
                 <Input
@@ -243,6 +265,11 @@ export default function WalletsPage() {
                   placeholder="VND"
                   isInvalid={!!errors.currency}
                   errorMessage={errors.currency?.message}
+                  classNames={{
+                    input: "bg-white dark:bg-gray-900",
+                    inputWrapper:
+                      "border-gray-200 dark:border-gray-700 hover:border-sky-400",
+                  }}
                 />
 
                 {!editingWallet && (
@@ -253,6 +280,11 @@ export default function WalletsPage() {
                     placeholder="0"
                     isInvalid={!!errors.initial_balance}
                     errorMessage={errors.initial_balance?.message}
+                    classNames={{
+                      input: "bg-white dark:bg-gray-900",
+                      inputWrapper:
+                        "border-gray-200 dark:border-gray-700 hover:border-sky-400",
+                    }}
                   />
                 )}
               </div>
@@ -262,8 +294,8 @@ export default function WalletsPage() {
                 Hủy
               </Button>
               <Button
-                color="primary"
                 type="submit"
+                className="bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold"
                 isLoading={isCreating || isUpdating}
               >
                 {editingWallet ? "Cập nhật" : "Thêm"}
