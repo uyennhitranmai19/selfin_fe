@@ -5,7 +5,7 @@ export const ExpenseTrackerLogo = () => (
     <img
       src="/images/selfin-logo.png"
       alt="SelFin Logo"
-      className="h-10 w-auto object-contain bg-red-500 rounded-md"
+      className="h-10 w-auto object-contain rounded-md"
     />
   </div>
 );

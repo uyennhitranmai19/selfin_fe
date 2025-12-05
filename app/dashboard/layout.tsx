@@ -120,7 +120,8 @@ export default function DashboardLayout({
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Mobile Header */}
         <header className="flex h-16 items-center justify-between border-b border-divider bg-background px-4 md:hidden">
-          <h1 className="text-lg font-bold text-primary">💸 Expense Tracker</h1>
+          <ExpenseTrackerLogo />
+
           <Dropdown>
             <DropdownTrigger>
               <Avatar as="button" size="sm" name={dummyUser.name} />

@@ -52,14 +52,11 @@ interface AnalyticsData {
 }
 
 const COLORS = [
-  "#FF6B6B",
-  "#4ECDC4",
-  "#95E1D3",
-  "#F38181",
-  "#AA96DA",
-  "#FCBAD3",
-  "#A8E6CF",
-  "#FFD3B6",
+  "#EB5757", // Ăn uống - Soft Red
+  "#27AE60", // Di chuyển - Jungle Green
+  "#F2994A", // Mua sắm - SelFin Orange
+  "#9B51E0", // Giải trí - Amethyst
+  "#2D9CDB", // Khác - Ocean Blue
 ];
 
 export default function DashboardPage() {
@@ -89,11 +86,11 @@ export default function DashboardPage() {
           totalBalance: 75000000,
         },
         expensesByCategory: [
-          { category: "Ăn uống", amount: 12000000, icon: "🍕" },
-          { category: "Di chuyển", amount: 8000000, icon: "🚗" },
-          { category: "Mua sắm", amount: 7000000, icon: "🛍️" },
-          { category: "Giải trí", amount: 5000000, icon: "🎮" },
-          { category: "Khác", amount: 3000000, icon: "📦" },
+          { category: "Ăn uống", amount: 12000000, icon: "🍕", color: "#EB5757" },
+          { category: "Di chuyển", amount: 8000000, icon: "🚗", color: "#27AE60" },
+          { category: "Mua sắm", amount: 7000000, icon: "🛍️", color: "#F2994A" },
+          { category: "Giải trí", amount: 5000000, icon: "🎮", color: "#9B51E0" },
+          { category: "Khác", amount: 3000000, icon: "📦", color: "#2D9CDB" },
         ],
         topCategories: [
           { category: "Ăn uống", amount: 12000000, count: 45 },
