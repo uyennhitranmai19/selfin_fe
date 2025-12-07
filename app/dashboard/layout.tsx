@@ -127,20 +127,26 @@ export default function DashboardLayout({
               <Avatar as="button" size="sm" name={dummyUser.name} />
             </DropdownTrigger>
             <DropdownMenu aria-label="User menu mobile">
-              {navigation.map((item) => (
-                <DropdownItem key={item.href} href={item.href}>
-                  {item.icon} {item.name}
+              <>
+                {navigation.map((item) => (
+                  <DropdownItem key={item.href} href={item.href}>
+                    {item.icon} {item.name}
+                  </DropdownItem>
+                ))}
+                <DropdownItem key="divider" isReadOnly>
+                  <Divider />
                 </DropdownItem>
-              ))}
-              <DropdownItem key="divider" isReadOnly>
-                <Divider />
-              </DropdownItem>
-              <DropdownItem key="profile" href="/dashboard/profile">
-                👤 Hồ sơ
-              </DropdownItem>
-              <DropdownItem key="logout" color="danger" onClick={handleSignOut}>
-                🚪 Đăng xuất
-              </DropdownItem>
+                <DropdownItem key="profile" href="/dashboard/profile">
+                  👤 Hồ sơ
+                </DropdownItem>
+                <DropdownItem
+                  key="logout"
+                  color="danger"
+                  onClick={handleSignOut}
+                >
+                  🚪 Đăng xuất
+                </DropdownItem>
+              </>
             </DropdownMenu>
           </Dropdown>
         </header>
