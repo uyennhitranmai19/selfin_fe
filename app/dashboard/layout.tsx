@@ -11,6 +11,7 @@ import {
   DropdownItem,
 } from "@heroui/dropdown";
 import { Divider } from "@heroui/divider";
+
 import { ExpenseTrackerLogo } from "@/components/logo";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -18,7 +19,7 @@ const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: "📊" },
   { name: "Giao dịch", href: "/dashboard/transactions", icon: "💳" },
   { name: "Ngân sách", href: "/dashboard/budgets", icon: "💰" },
-  { name: "Giao dịch định kỳ", href: "/dashboard/recurring", icon: "🔄" },
+// đã xoá giao dịch định kì
   // { name: "Phân tích", href: "/dashboard/analytics", icon: "📈" },
   { name: "Ví", href: "/dashboard/wallets", icon: "👛" },
   { name: "Danh mục", href: "/dashboard/categories", icon: "📁" },
@@ -48,7 +49,7 @@ export default function DashboardLayout({
       <aside className="hidden w-64 border-r border-divider bg-background md:block flex-shrink-0">
         <div className="flex h-full flex-col">
           {/* Logo */}
-          <Link href="/" className="flex h-16 items-center px-6">
+          <Link className="flex h-16 items-center px-6" href="/">
             <ExpenseTrackerLogo />
             {/* <h1 className="text-xl font-bold text-primary">Expense Tracker</h1> */}
           </Link>
@@ -59,15 +60,16 @@ export default function DashboardLayout({
           <nav className="flex-1 space-y-1 px-3 py-4">
             {navigation.map((item) => {
               const isActive = pathname === item.href;
+
               return (
                 <Link
                   key={item.name}
-                  href={item.href}
                   className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                     isActive
                       ? "bg-primary text-primary-foreground"
                       : "text-default-600 hover:bg-default-100 hover:text-default-900"
                   }`}
+                  href={item.href}
                 >
                   <span className="text-lg">{item.icon}</span>
                   <span>{item.name}</span>
@@ -83,9 +85,9 @@ export default function DashboardLayout({
             <Dropdown placement="top">
               <DropdownTrigger>
                 <Button
-                  variant="flat"
                   className="w-full justify-start gap-3"
-                  startContent={<Avatar size="sm" name={dummyUser.name} />}
+                  startContent={<Avatar name={dummyUser.name} size="sm" />}
+                  variant="flat"
                 >
                   <div className="flex flex-col items-start">
                     <span className="text-sm font-medium">
@@ -127,7 +129,7 @@ export default function DashboardLayout({
 
           <Dropdown>
             <DropdownTrigger>
-              <Avatar as="button" size="sm" name={dummyUser.name} />
+              <Avatar as="button" name={dummyUser.name} size="sm" />
             </DropdownTrigger>
             <DropdownMenu aria-label="User menu mobile">
               <>
