@@ -13,6 +13,7 @@ import {
 import { Divider } from "@heroui/divider";
 import { ExpenseTrackerLogo } from "@/components/logo";
 import { useAuth } from "@/contexts/AuthContext";
+import { useGetCurrentUserInfoV1AuthMeGet } from "@/lib/api";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: "📊" },
@@ -31,12 +32,10 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
   const { logout } = useAuth();
+  const { data: userInfo } = useGetCurrentUserInfoV1AuthMeGet();
 
-  // TODO: Kết nối API thật sau
-  const dummyUser = {
-    name: "Nguyễn Văn A",
-    email: "user@example.com",
-  };
+  const userName = userInfo?.full_name || "User";
+  const userEmail = userInfo?.email || "";
 
   const handleSignOut = () => {
     logout();
@@ -85,14 +84,12 @@ export default function DashboardLayout({
                 <Button
                   variant="flat"
                   className="w-full justify-start gap-3"
-                  startContent={<Avatar size="sm" name={dummyUser.name} />}
+                  startContent={<Avatar size="sm" name={userName} />}
                 >
                   <div className="flex flex-col items-start">
-                    <span className="text-sm font-medium">
-                      {dummyUser.name}
-                    </span>
+                    <span className="text-sm font-medium">{userName}</span>
                     <span className="text-xs text-default-400">
-                      {dummyUser.email}
+                      {userEmail}
                     </span>
                   </div>
                 </Button>
@@ -127,7 +124,7 @@ export default function DashboardLayout({
 
           <Dropdown>
             <DropdownTrigger>
-              <Avatar as="button" size="sm" name={dummyUser.name} />
+              <Avatar as="button" size="sm" name={userName} />
             </DropdownTrigger>
             <DropdownMenu aria-label="User menu mobile">
               <>
