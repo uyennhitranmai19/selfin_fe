@@ -14,12 +14,13 @@ import { Divider } from "@heroui/divider";
 
 import { ExpenseTrackerLogo } from "@/components/logo";
 import { useAuth } from "@/contexts/AuthContext";
+import { useGetCurrentUserInfoV1AuthMeGet } from "@/lib/api";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: "📊" },
   { name: "Giao dịch", href: "/dashboard/transactions", icon: "💳" },
   { name: "Ngân sách", href: "/dashboard/budgets", icon: "💰" },
-// đã xoá giao dịch định kì
+  // đã xoá giao dịch định kì
   // { name: "Phân tích", href: "/dashboard/analytics", icon: "📈" },
   { name: "Ví", href: "/dashboard/wallets", icon: "👛" },
   { name: "Danh mục", href: "/dashboard/categories", icon: "📁" },
@@ -32,12 +33,10 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
   const { logout } = useAuth();
+  const { data: userInfo } = useGetCurrentUserInfoV1AuthMeGet();
 
-  // TODO: Kết nối API thật sau
-  const dummyUser = {
-    name: "Nguyễn Văn A",
-    email: "user@example.com",
-  };
+  const userName = userInfo?.full_name || "User";
+  const userEmail = userInfo?.email || "";
 
   const handleSignOut = () => {
     logout();
@@ -86,15 +85,12 @@ export default function DashboardLayout({
               <DropdownTrigger>
                 <Button
                   className="w-full justify-start gap-3"
-                  startContent={<Avatar name={dummyUser.name} size="sm" />}
-                  variant="flat"
+                  startContent={<Avatar size="sm" name={userName} />}
                 >
                   <div className="flex flex-col items-start">
-                    <span className="text-sm font-medium">
-                      {dummyUser.name}
-                    </span>
+                    <span className="text-sm font-medium">{userName}</span>
                     <span className="text-xs text-default-400">
-                      {dummyUser.email}
+                      {userEmail}
                     </span>
                   </div>
                 </Button>
@@ -129,7 +125,7 @@ export default function DashboardLayout({
 
           <Dropdown>
             <DropdownTrigger>
-              <Avatar as="button" name={dummyUser.name} size="sm" />
+              <Avatar as="button" size="sm" name={userName} />
             </DropdownTrigger>
             <DropdownMenu aria-label="User menu mobile">
               <>

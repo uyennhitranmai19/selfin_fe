@@ -9,6 +9,7 @@ import { Spinner } from "@heroui/spinner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useGetCurrentUserInfoV1AuthMeGet } from "@/lib/api";
 
 const profileSchema = z.object({
   name: z.string().min(1, "Tên là bắt buộc"),
@@ -31,9 +32,11 @@ type ProfileFormData = z.infer<typeof profileSchema>;
 type PasswordFormData = z.infer<typeof passwordSchema>;
 
 export default function ProfilePage() {
-  const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [passwordMessage, setPasswordMessage] = useState("");
+
+  // Fetch current user info from API
+  const { data: userInfo, isLoading } = useGetCurrentUserInfoV1AuthMeGet();
 
   const {
     register,
@@ -54,28 +57,14 @@ export default function ProfilePage() {
   });
 
   useEffect(() => {
-    fetchProfile();
-  }, []);
-
-  const fetchProfile = async () => {
-    try {
-      setLoading(true);
-      // TODO: Kết nối API thật sau
-      await new Promise((resolve) => setTimeout(resolve, 300));
-
-      const dummyProfile = {
-        name: "Nguyễn Văn A",
-        email: "user@example.com",
+    if (userInfo) {
+      reset({
+        name: userInfo.full_name,
+        email: userInfo.email,
         currency: "VND",
-      };
-
-      reset(dummyProfile);
-    } catch (error) {
-      console.error("Error fetching profile:", error);
-    } finally {
-      setLoading(false);
+      });
     }
-  };
+  }, [userInfo, reset]);
 
   const onSubmitProfile = async (data: ProfileFormData) => {
     try {
@@ -104,7 +93,7 @@ export default function ProfilePage() {
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex justify-center py-8">
         <Spinner size="lg" />
