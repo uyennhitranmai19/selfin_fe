@@ -526,11 +526,14 @@ export default function DashboardPage() {
                 try {
                   const response =
                     await exportTransactionsCsvV1ReportsTransactionsCsvGet({
-                      start_date: format(
+                      date_from: format(
                         startOfMonth(new Date()),
-                        "yyyy-MM-dd"
+                        "yyyy-MM-dd'T'HH:mm:ss"
                       ),
-                      end_date: format(endOfMonth(new Date()), "yyyy-MM-dd"),
+                      date_to: format(
+                        endOfMonth(new Date()),
+                        "yyyy-MM-dd'T'HH:mm:ss"
+                      ),
                     });
 
                   // Create blob and download
