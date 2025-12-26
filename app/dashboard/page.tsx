@@ -524,24 +524,30 @@ export default function DashboardPage() {
               startContent={<span>📊</span>}
               onClick={async () => {
                 try {
-                  const response = await exportTransactionsCsvV1ReportsTransactionsCsvGet({
-                    start_date: format(startOfMonth(new Date()), "yyyy-MM-dd"),
-                    end_date: format(endOfMonth(new Date()), "yyyy-MM-dd"),
-                  });
-                  
+                  const response =
+                    await exportTransactionsCsvV1ReportsTransactionsCsvGet({
+                      start_date: format(
+                        startOfMonth(new Date()),
+                        "yyyy-MM-dd"
+                      ),
+                      end_date: format(endOfMonth(new Date()), "yyyy-MM-dd"),
+                    });
+
                   // Create blob and download
-                  const blob = new Blob([response as any], { type: 'text/csv' });
+                  const blob = new Blob([response as any], {
+                    type: "text/csv",
+                  });
                   const url = window.URL.createObjectURL(blob);
-                  const a = document.createElement('a');
+                  const a = document.createElement("a");
                   a.href = url;
-                  a.download = `transactions-${format(new Date(), 'yyyy-MM-dd')}.csv`;
+                  a.download = `transactions-${format(new Date(), "yyyy-MM-dd")}.csv`;
                   document.body.appendChild(a);
                   a.click();
                   document.body.removeChild(a);
                   window.URL.revokeObjectURL(url);
                 } catch (error) {
-                  console.error('Export failed:', error);
-                  alert('Xuất báo cáo thất bại');
+                  console.error("Export failed:", error);
+                  alert("Xuất báo cáo thất bại");
                 }
               }}
             >
