@@ -35,6 +35,8 @@ import {
   useGetSpendingTrendV1AnalyticsSpendingTrendGet,
   useGetTopCategoriesV1AnalyticsTopCategoriesGet,
   useGetWalletsV1WalletsGet,
+  exportTransactionsCsvV1ReportsTransactionsCsvGet,
+  exportTransactionsPdfV1ReportsTransactionsPdfGet,
 } from "@/lib/api";
 
 interface AnalyticsData {
@@ -520,11 +522,30 @@ export default function DashboardPage() {
             <Button
               className="bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold"
               startContent={<span>📊</span>}
-              onClick={() =>
-                window.open("/api/export/transactions?format=csv", "_blank")
-              }
+              onClick={async () => {
+                try {
+                  const response = await exportTransactionsCsvV1ReportsTransactionsCsvGet({
+                    start_date: format(startOfMonth(new Date()), "yyyy-MM-dd"),
+                    end_date: format(endOfMonth(new Date()), "yyyy-MM-dd"),
+                  });
+                  
+                  // Create blob and download
+                  const blob = new Blob([response as any], { type: 'text/csv' });
+                  const url = window.URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `transactions-${format(new Date(), 'yyyy-MM-dd')}.csv`;
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                  window.URL.revokeObjectURL(url);
+                } catch (error) {
+                  console.error('Export failed:', error);
+                  alert('Xuất báo cáo thất bại');
+                }
+              }}
             >
-              Xuất báo cáo
+              Xuất báo cáo CSV
             </Button>
           </div>
         </CardBody>
