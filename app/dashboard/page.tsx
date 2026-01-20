@@ -496,7 +496,7 @@ export default function DashboardPage() {
                     ))}
                   </Pie>
                   <Tooltip
-                    formatter={(value) => formatCurrency(value ?? 0)}
+                    formatter={(value) => formatCurrency(Number(value ?? 0))}
                   />
                   <Legend />
                 </PieChart>
@@ -523,7 +523,7 @@ export default function DashboardPage() {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
                 <YAxis width={80} />
-                <Tooltip formatter={(value) => formatCurrency(value ?? 0)} />
+                <Tooltip formatter={(value) => formatCurrency(Number(value ?? 0))} />
                 <Legend />
                 <Line
                   dataKey="income"
