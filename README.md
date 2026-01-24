@@ -60,7 +60,7 @@
 
 ### Backend Integration
 
-- **API Base URL**: `https://api-sit.jupiterpro.online/api/selfin`
+- **API Base URL**: `http://api-sit.jupiterpro.online/api/selfin-php/docs`
 - **OpenAPI Specification**: Auto-generated from `/api/selfin/openapi.json`
 - **Code Generation**:
   - Command: `yarn generate:api`
