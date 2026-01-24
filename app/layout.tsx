@@ -58,7 +58,7 @@ export default function RootLayout({
                   Powered by
                 </span>
                 <p className="bg-gradient-to-r from-sky-500 to-blue-600 bg-clip-text text-transparent font-semibold">
-                  Team 3
+                  Team 15
                 </p>
               </Link>
             </footer>
