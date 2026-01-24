@@ -51,7 +51,7 @@ export default function RootLayout({
               <Link
                 isExternal
                 className="flex items-center gap-1 text-current"
-                href="https://github.com/nguyenquocdatUIT/expenseTracker"
+                href="https://github.com/uyennhitranmai19/selfin_fe"
                 title="ExpenseTracker on GitHub"
               >
                 <span className="text-gray-600 dark:text-gray-400">
